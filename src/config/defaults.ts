@@ -5,5 +5,8 @@ export const DEFAULT_CONFIG: N8nLintConfig = {
     'no-merge-in-loop': 'error',
     'no-dead-end-in-subworkflow': 'warning',
     'no-dual-branch-convergence': 'error',
+    'no-unreachable-nodes': 'warning',
+    'splitInBatches-missing-loop-back': 'error',
+    'http-no-error-handling': 'info',
   },
 };

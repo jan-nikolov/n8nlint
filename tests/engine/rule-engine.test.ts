@@ -58,13 +58,16 @@ describe('rule-engine', () => {
     expect(violations).toHaveLength(0);
   });
 
-  it('getAllRules should return 3 rules', () => {
+  it('getAllRules should return 6 rules', () => {
     const rules = getAllRules();
-    expect(rules).toHaveLength(3);
+    expect(rules).toHaveLength(6);
     expect(rules.map((r) => r.id)).toEqual([
       'no-merge-in-loop',
       'no-dead-end-in-subworkflow',
       'no-dual-branch-convergence',
+      'no-unreachable-nodes',
+      'splitInBatches-missing-loop-back',
+      'http-no-error-handling',
     ]);
   });
 });

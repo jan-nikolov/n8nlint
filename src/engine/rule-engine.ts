@@ -3,12 +3,22 @@ import type { LintRule, RuleViolation, Severity } from '../types/rule.js';
 import type { N8nWorkflow } from '../types/n8n-workflow.js';
 import type { N8nLintConfig, RuleSetting } from '../types/config.js';
 import type { NodeAttributes, EdgeAttributes } from '../types/graph.js';
-import { noMergeInLoop, noDeadEndInSubworkflow, noDualBranchConvergence } from '../rules/index.js';
+import {
+  noMergeInLoop,
+  noDeadEndInSubworkflow,
+  noDualBranchConvergence,
+  noUnreachableNodes,
+  splitInBatchesMissingLoopBack,
+  httpNoErrorHandling,
+} from '../rules/index.js';
 
 const ALL_RULES: LintRule[] = [
   noMergeInLoop,
   noDeadEndInSubworkflow,
   noDualBranchConvergence,
+  noUnreachableNodes,
+  splitInBatchesMissingLoopBack,
+  httpNoErrorHandling,
 ];
 
 /**

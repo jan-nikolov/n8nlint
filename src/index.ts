@@ -9,6 +9,13 @@ export type { NodeAttributes, EdgeAttributes } from './types/graph.js';
 export type { N8nLintConfig, RuleSetting } from './types/config.js';
 export type { Reporter, FileResult } from './reporters/reporter.js';
 
-export { noMergeInLoop, noDeadEndInSubworkflow, noDualBranchConvergence } from './rules/index.js';
+export {
+  noMergeInLoop,
+  noDeadEndInSubworkflow,
+  noDualBranchConvergence,
+  noUnreachableNodes,
+  splitInBatchesMissingLoopBack,
+  httpNoErrorHandling,
+} from './rules/index.js';
 export { terminalReporter } from './reporters/terminal-reporter.js';
 export { jsonReporter } from './reporters/json-reporter.js';
