@@ -1,8 +1,8 @@
 # n8nlint
 
-Static analysis for n8n workflows — catch runtime bugs before production.
+Static analysis for n8n workflows — like ESLint for your automation pipelines.
 
-n8n workflows can contain subtle, non-deterministic bugs that only surface with specific data constellations. n8nlint analyzes workflow JSON files and detects these patterns before they cause issues in production.
+n8n workflows can contain subtle bugs that only surface at runtime with specific data constellations: race conditions, dead branches, missing loop-backs, unhandled errors. n8nlint analyzes workflow JSON files and catches these patterns before they cause issues in production.
 
 ## Installation
 
@@ -64,6 +64,24 @@ Detects nodes with `onError: continueErrorOutput` where both the success and err
 
 **Fix:** Change `onError` from `continueErrorOutput` to `continueRegularOutput`. All items flow through one branch and downstream nodes fire only once.
 
+### `no-unreachable-nodes` (warning)
+
+Detects nodes without incoming connections (excluding trigger nodes). Unreachable nodes will never execute and are likely leftover from workflow edits.
+
+**Fix:** Connect the node to the workflow or remove it if unused.
+
+### `splitInBatches-missing-loop-back` (error)
+
+Detects `splitInBatches` loops where the loop body has no path back to the split node. Without this connection, only the first batch is processed and the rest of the data is silently dropped.
+
+**Fix:** Connect the last node in the loop body back to the `splitInBatches` node to complete the loop.
+
+### `http-no-error-handling` (info)
+
+Detects HTTP Request nodes without an `onError` configuration. Without error handling, any HTTP error (timeout, 4xx, 5xx) will stop the entire workflow execution.
+
+**Fix:** Set `onError` to `continueRegularOutput` or `continueErrorOutput` to handle HTTP errors gracefully.
+
 ## Configuration
 
 Create a `.n8nlintrc.yml` in your project root:
@@ -73,6 +91,9 @@ rules:
   no-merge-in-loop: error
   no-dead-end-in-subworkflow: warning
   no-dual-branch-convergence: error
+  no-unreachable-nodes: warning
+  splitInBatches-missing-loop-back: error
+  http-no-error-handling: info
 ```
 
 Valid values: `error`, `warning`, `info`, `off`
@@ -88,7 +109,7 @@ HTTP Request n8nlint-ignore
 ## GitHub Action
 
 ```yaml
-- uses: jnikolov/n8nlint@v0
+- uses: jnikolov/n8nlint@v0.2.0
   with:
     patterns: './workflows/*.json'
 ```
@@ -107,6 +128,16 @@ for (const v of violations) {
   console.log(`[${v.severity}] ${v.message}`);
 }
 ```
+
+## Roadmap
+
+- **v0.3** — Auto-layout and formatting (Prettier for n8n)
+- **v0.4** — Expression analysis rules (invalid references, type mismatches)
+- **v0.5** — n8n API integration (lint workflows directly from n8n instances)
+
+## Disclaimer
+
+n8nlint is an independent open-source project. It is **not affiliated with, endorsed by, or sponsored by n8n GmbH**.
 
 ## License
 
