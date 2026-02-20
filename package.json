@@ -1,6 +1,6 @@
 {
   "name": "n8nlint",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Static analysis for n8n workflows — catch runtime bugs before production",
   "type": "module",
   "main": "./dist/index.js",
