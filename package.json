@@ -1,0 +1,62 @@
+{
+  "name": "n8nlint",
+  "version": "0.1.0",
+  "description": "Static analysis for n8n workflows — catch runtime bugs before production",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "n8nlint": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "node --loader ts-node/esm src/cli.ts"
+  },
+  "keywords": [
+    "n8n",
+    "lint",
+    "workflow",
+    "static-analysis",
+    "ci"
+  ],
+  "author": "Jan Nikolov",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jnikolov/n8nlint"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "glob": "^10.3.0",
+    "graphology": "^0.25.4",
+    "graphology-traversal": "^0.3.1",
+    "graphology-types": "^0.24.7",
+    "yaml": "^2.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0"
+  }
+}

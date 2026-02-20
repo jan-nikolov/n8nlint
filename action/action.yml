@@ -1,0 +1,29 @@
+name: 'n8nlint'
+description: 'Static analysis for n8n workflows'
+author: 'Jan Nikolov'
+
+inputs:
+  patterns:
+    description: 'Glob patterns for workflow JSON files'
+    required: true
+    default: '**/*.json'
+  format:
+    description: 'Output format (terminal or json)'
+    required: false
+    default: 'terminal'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Run n8nlint
+      shell: bash
+      run: npx n8nlint@latest --format ${{ inputs.format }} ${{ inputs.patterns }}
+
+branding:
+  icon: 'check-circle'
+  color: 'orange'

@@ -1,0 +1,17 @@
+{
+  "name": "Regular Workflow with Dead-End (not a sub-workflow, clean)",
+  "nodes": [
+    { "id": "1", "name": "Start", "type": "n8n-nodes-base.start", "typeVersion": 1, "position": [0, 0], "parameters": {} },
+    { "id": "2", "name": "IF", "type": "n8n-nodes-base.if", "typeVersion": 2, "position": [200, 0], "parameters": {} },
+    { "id": "3", "name": "Process", "type": "n8n-nodes-base.set", "typeVersion": 3, "position": [400, 0], "parameters": {} }
+  ],
+  "connections": {
+    "Start": { "main": [[{ "node": "IF", "type": "main", "index": 0 }]] },
+    "IF": {
+      "main": [
+        [{ "node": "Process", "type": "main", "index": 0 }],
+        []
+      ]
+    }
+  }
+}

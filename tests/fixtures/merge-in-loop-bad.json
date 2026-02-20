@@ -1,0 +1,30 @@
+{
+  "name": "Merge in Loop (bad)",
+  "nodes": [
+    { "id": "1", "name": "Start", "type": "n8n-nodes-base.start", "typeVersion": 1, "position": [0, 0], "parameters": {} },
+    { "id": "2", "name": "Loop", "type": "n8n-nodes-base.splitInBatches", "typeVersion": 3, "position": [200, 0], "parameters": {} },
+    { "id": "3", "name": "IF Check", "type": "n8n-nodes-base.if", "typeVersion": 2, "position": [400, 0], "parameters": {} },
+    { "id": "4", "name": "Branch A", "type": "n8n-nodes-base.set", "typeVersion": 3, "position": [600, -100], "parameters": {} },
+    { "id": "5", "name": "Branch B", "type": "n8n-nodes-base.set", "typeVersion": 3, "position": [600, 100], "parameters": {} },
+    { "id": "6", "name": "Bad Merge", "type": "n8n-nodes-base.merge", "typeVersion": 3, "position": [800, 0], "parameters": {} },
+    { "id": "7", "name": "Done", "type": "n8n-nodes-base.set", "typeVersion": 3, "position": [200, 200], "parameters": {} }
+  ],
+  "connections": {
+    "Start": { "main": [[{ "node": "Loop", "type": "main", "index": 0 }]] },
+    "Loop": {
+      "main": [
+        [{ "node": "IF Check", "type": "main", "index": 0 }],
+        [{ "node": "Done", "type": "main", "index": 0 }]
+      ]
+    },
+    "IF Check": {
+      "main": [
+        [{ "node": "Branch A", "type": "main", "index": 0 }],
+        [{ "node": "Branch B", "type": "main", "index": 0 }]
+      ]
+    },
+    "Branch A": { "main": [[{ "node": "Bad Merge", "type": "main", "index": 0 }]] },
+    "Branch B": { "main": [[{ "node": "Bad Merge", "type": "main", "index": 1 }]] },
+    "Bad Merge": { "main": [[{ "node": "Loop", "type": "main", "index": 0 }]] }
+  }
+}

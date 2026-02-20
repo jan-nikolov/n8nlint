@@ -1,0 +1,19 @@
+{
+  "name": "Sub-Workflow with Dead-End (bad)",
+  "nodes": [
+    { "id": "1", "name": "Sub-Workflow Trigger", "type": "n8n-nodes-base.executeWorkflowTrigger", "typeVersion": 1, "position": [0, 0], "parameters": {} },
+    { "id": "2", "name": "Compare", "type": "n8n-nodes-base.compareDatasets", "typeVersion": 1, "position": [200, 0], "parameters": {}, "onError": "continueErrorOutput" },
+    { "id": "3", "name": "Only in A", "type": "n8n-nodes-base.set", "typeVersion": 3, "position": [400, -200], "parameters": {} },
+    { "id": "4", "name": "Both", "type": "n8n-nodes-base.set", "typeVersion": 3, "position": [400, 200], "parameters": {} }
+  ],
+  "connections": {
+    "Sub-Workflow Trigger": { "main": [[{ "node": "Compare", "type": "main", "index": 0 }]] },
+    "Compare": {
+      "main": [
+        [{ "node": "Only in A", "type": "main", "index": 0 }],
+        [],
+        [{ "node": "Both", "type": "main", "index": 0 }]
+      ]
+    }
+  }
+}

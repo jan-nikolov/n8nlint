@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.claude/
+CLAUDE.md
+CONTEXT.md
+*.plan.md
+.n8nlintrc.yml
+coverage/

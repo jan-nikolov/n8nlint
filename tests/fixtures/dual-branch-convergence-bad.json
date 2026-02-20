@@ -1,0 +1,21 @@
+{
+  "name": "Dual Branch Convergence (bad)",
+  "nodes": [
+    { "id": "1", "name": "Start", "type": "n8n-nodes-base.start", "typeVersion": 1, "position": [0, 0], "parameters": {} },
+    { "id": "2", "name": "HTTP Request", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4, "position": [200, 0], "parameters": {}, "onError": "continueErrorOutput" },
+    { "id": "3", "name": "Process Success", "type": "n8n-nodes-base.set", "typeVersion": 3, "position": [400, -100], "parameters": {} },
+    { "id": "4", "name": "Log Error", "type": "n8n-nodes-base.set", "typeVersion": 3, "position": [400, 100], "parameters": {} },
+    { "id": "5", "name": "Aggregate All", "type": "n8n-nodes-base.aggregate", "typeVersion": 1, "position": [600, 0], "parameters": {} }
+  ],
+  "connections": {
+    "Start": { "main": [[{ "node": "HTTP Request", "type": "main", "index": 0 }]] },
+    "HTTP Request": {
+      "main": [
+        [{ "node": "Process Success", "type": "main", "index": 0 }],
+        [{ "node": "Log Error", "type": "main", "index": 0 }]
+      ]
+    },
+    "Process Success": { "main": [[{ "node": "Aggregate All", "type": "main", "index": 0 }]] },
+    "Log Error": { "main": [[{ "node": "Aggregate All", "type": "main", "index": 0 }]] }
+  }
+}
