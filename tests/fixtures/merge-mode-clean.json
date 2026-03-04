@@ -1,0 +1,14 @@
+{
+  "name": "Merge mode (clean)",
+  "nodes": [
+    { "id": "1", "name": "Trigger", "type": "n8n-nodes-base.manualTrigger", "typeVersion": 1, "position": [0, 0], "parameters": {} },
+    { "id": "2", "name": "Set A", "type": "n8n-nodes-base.set", "typeVersion": 3, "position": [200, 0], "parameters": {} },
+    { "id": "3", "name": "Set B", "type": "n8n-nodes-base.set", "typeVersion": 3, "position": [200, 200], "parameters": {} },
+    { "id": "4", "name": "Merge", "type": "n8n-nodes-base.merge", "typeVersion": 3, "position": [400, 100], "parameters": { "mode": "append" } }
+  ],
+  "connections": {
+    "Trigger": { "main": [[{ "node": "Set A", "type": "main", "index": 0 }, { "node": "Set B", "type": "main", "index": 0 }]] },
+    "Set A": { "main": [[{ "node": "Merge", "type": "main", "index": 0 }]] },
+    "Set B": { "main": [[{ "node": "Merge", "type": "main", "index": 1 }]] }
+  }
+}
