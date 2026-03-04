@@ -1,0 +1,14 @@
+{
+  "name": "Binary decode (clean)",
+  "nodes": [
+    { "id": "1", "name": "Trigger", "type": "n8n-nodes-base.manualTrigger", "typeVersion": 1, "position": [0, 0], "parameters": {} },
+    { "id": "2", "name": "Download PDF", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4, "position": [200, 0], "parameters": { "url": "https://example.com/doc.pdf", "responseFormat": "file" }, "onError": "continueRegularOutput" },
+    { "id": "3", "name": "Decode Binary", "type": "n8n-nodes-base.code", "typeVersion": 2, "position": [400, 0], "parameters": { "jsCode": "const buffer = await this.helpers.getBinaryDataBuffer(0, 'data');\nreturn items;" } },
+    { "id": "4", "name": "Upload to Drive", "type": "n8n-nodes-base.googleDrive", "typeVersion": 3, "position": [600, 0], "parameters": { "operation": "upload" } }
+  ],
+  "connections": {
+    "Trigger": { "main": [[{ "node": "Download PDF", "type": "main", "index": 0 }]] },
+    "Download PDF": { "main": [[{ "node": "Decode Binary", "type": "main", "index": 0 }]] },
+    "Decode Binary": { "main": [[{ "node": "Upload to Drive", "type": "main", "index": 0 }]] }
+  }
+}
