@@ -6,7 +6,7 @@
     { "id": "3", "name": "IF Check", "type": "n8n-nodes-base.if", "typeVersion": 2, "position": [400, 0], "parameters": {} },
     { "id": "4", "name": "Branch A", "type": "n8n-nodes-base.set", "typeVersion": 3, "position": [600, -100], "parameters": {} },
     { "id": "5", "name": "Branch B", "type": "n8n-nodes-base.set", "typeVersion": 3, "position": [600, 100], "parameters": {} },
-    { "id": "6", "name": "Bad Merge", "type": "n8n-nodes-base.merge", "typeVersion": 3, "position": [800, 0], "parameters": {} },
+    { "id": "6", "name": "Bad Merge", "type": "n8n-nodes-base.merge", "typeVersion": 3, "position": [800, 0], "parameters": { "mode": "append" } },
     { "id": "7", "name": "Done", "type": "n8n-nodes-base.set", "typeVersion": 3, "position": [200, 200], "parameters": {} }
   ],
   "connections": {

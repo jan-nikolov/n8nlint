@@ -8,5 +8,13 @@ export const DEFAULT_CONFIG: N8nLintConfig = {
     'no-unreachable-nodes': 'warning',
     'splitInBatches-missing-loop-back': 'error',
     'http-no-error-handling': 'info',
+    'code-node-no-require': 'error',
+    'code-node-no-env': 'error',
+    'code-node-no-credential-helpers': 'error',
+    'api-clean-json': 'warning',
+    'large-inline-code': 'info',
+    'merge-mode-ambiguity': 'info',
+    'prefer-named-node-reference': 'warning',
+    'binary-needs-decode-before-upload': 'warning',
   },
 };
