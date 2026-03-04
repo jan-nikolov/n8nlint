@@ -16,6 +16,14 @@ export {
   noUnreachableNodes,
   splitInBatchesMissingLoopBack,
   httpNoErrorHandling,
+  codeNodeNoRequire,
+  codeNodeNoEnv,
+  codeNodeNoCredentialHelpers,
+  apiCleanJson,
+  largeInlineCode,
+  mergeModeAmbiguity,
+  preferNamedNodeReference,
+  binaryNeedsDecodeBeforeUpload,
 } from './rules/index.js';
 export { terminalReporter } from './reporters/terminal-reporter.js';
 export { jsonReporter } from './reporters/json-reporter.js';

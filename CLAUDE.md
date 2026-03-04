@@ -38,6 +38,7 @@ workflow.json → parseWorkflow() → graphology MultiDirectedGraph → LintRule
 - **`src/engine/rule-engine.ts`** — Orchestrates rule execution. `runRules()` applies config-based severity overrides and returns violations. `getAllRules()` returns the rule registry.
 - **`src/graph/graph-utils.ts`** — Graph traversal algorithms: BFS reachability (forward/reverse), loop body detection (intersection of forward & reverse reachable sets from splitInBatches), branch convergence detection (intersection of downstream sets from two branches).
 - **`src/rules/`** — Each rule implements `LintRule` interface with `id`, `description`, `defaultSeverity`, `docsUrl`, and `detect(graph, workflow)`.
+- **`src/rules/code-node-utils.ts`** — Shared helper for Code-node rules. `getCodeNodes(graph, workflow)` returns all `n8n-nodes-base.code` nodes with their `jsCode`.
 - **`src/config/config-loader.ts`** — Searches for `.n8nlintrc.{yml,yaml,json}` from cwd upward to filesystem root, merges with defaults.
 - **`src/reporters/`** — `terminal-reporter.ts` (colored output with severity icons) and `json-reporter.ts` (structured JSON for CI/CD).
 - **`src/cli.ts`** — CLI entry point using Commander.js. Exit code 1 only when violations with severity `error` exist.
@@ -52,6 +53,14 @@ workflow.json → parseWorkflow() → graphology MultiDirectedGraph → LintRule
 | `no-unreachable-nodes` | warning | Nodes without incoming connections (except triggers) |
 | `splitInBatches-missing-loop-back` | error | splitInBatches loop without path back to split node |
 | `http-no-error-handling` | info | HTTP Request nodes without onError configuration |
+| `code-node-no-require` | error | require() calls in Code node jsCode |
+| `code-node-no-env` | error | $env access in Code node jsCode |
+| `code-node-no-credential-helpers` | error | Credential/HTTP helper APIs in Code nodes |
+| `api-clean-json` | warning | Top-level API properties in workflow JSON |
+| `large-inline-code` | info | Code nodes with >100 lines of inline code |
+| `merge-mode-ambiguity` | info | Merge nodes without explicit mode |
+| `prefer-named-node-reference` | warning | Fragile $json refs in multi-input nodes |
+| `binary-needs-decode-before-upload` | warning | Upload nodes without binary decoding from HTTP |
 
 ## Adding a New Rule
 
@@ -64,6 +73,12 @@ workflow.json → parseWorkflow() → graphology MultiDirectedGraph → LintRule
 7. Create test in `tests/rules/<rule-id>.test.ts`
 8. Update rule count assertion in `tests/engine/rule-engine.test.ts`
 9. Verify existing "clean" fixtures don't trigger the new rule
+
+**Shared helpers:** Code-node rules share `src/rules/code-node-utils.ts` (`getCodeNodes()` extracts jsCode from all `n8n-nodes-base.code` nodes). Reuse for new Code-node rules.
+
+**Cross-fixture contamination:** Existing fixtures (both `-bad.json` and `-clean.json`) may need updates when adding rules. The `rule-engine.test.ts` "skip rules set to off" test only disables specific rules — new rules can fire on the same fixture. Fix the fixture (e.g., add explicit `"mode": "append"` to Merge nodes) rather than modifying the test.
+
+**TypeScript gotcha:** Casting `N8nWorkflow` to `Record<string, unknown>` requires double-cast via `unknown` (`workflow as unknown as Record<string, unknown>`).
 
 ## Graph Utilities (`src/graph/graph-utils.ts`)
 
@@ -101,6 +116,7 @@ outputHasConnections(graph, nodeName, outputIndex): boolean
 - **Ignore marker:** Nodes with `n8nlint-ignore` (case-insensitive) in their name are skipped by rules
 - **ESM only:** The package uses `"type": "module"` with ES2022 target
 - **Config filenames:** `.n8nlintrc.yml`, `.n8nlintrc.yaml`, `.n8nlintrc.json`
+- **Git workflow:** Feature branches (`feature/v0.x-description`), one commit per rule with `Closes #N` in body for auto-closing GitHub issues
 
 ## Testing
 
@@ -109,7 +125,7 @@ outputHasConnections(graph, nodeName, outputIndex): boolean
 - Test helper `loadFixture(name)` reads and parses fixture files
 - CLI tests use `execFileSync` with `npx tsx` to run the CLI as a subprocess
 - Coverage excludes `src/cli.ts` (integration-tested via subprocess)
-- **Gotcha:** When adding rules, existing "clean" fixtures may trigger new rules (e.g., an HTTP node without `onError`). Always run `npm test` after registering a new rule.
+- Always run `npm test` after registering a new rule (see cross-fixture contamination note above)
 
 ## Project Docs
 

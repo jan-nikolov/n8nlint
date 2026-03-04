@@ -82,6 +82,54 @@ Detects HTTP Request nodes without an `onError` configuration. Without error han
 
 **Fix:** Set `onError` to `continueRegularOutput` or `continueErrorOutput` to handle HTTP errors gracefully.
 
+### `code-node-no-require` (error)
+
+Detects `require()` calls in Code node `jsCode`. Since n8n v2.10+, the sandbox blocks `require()` for Node.js built-in modules — the error only surfaces at runtime.
+
+**Fix:** Use built-in n8n nodes or helpers instead of `require()`.
+
+### `code-node-no-env` (error)
+
+Detects `$env` access in Code node `jsCode`. The n8n sandbox blocks `$env`, causing a cryptic runtime error.
+
+**Fix:** Use a Set node or config node to pass environment variables into the workflow.
+
+### `code-node-no-credential-helpers` (error)
+
+Detects credential/HTTP helper APIs (`this.getCredentials()`, `this.helpers.httpRequestWithAuthentication()`, `this.helpers.requestOAuth2()`, `this.helpers.request()`) in Code nodes. These APIs are only available in custom nodes.
+
+**Fix:** Use an HTTP Request node for authenticated API calls.
+
+### `api-clean-json` (warning)
+
+Detects top-level workflow JSON properties (`active`, `triggerCount`, `staticData`, `pinData`, `versionId`) that are not accepted by the n8n REST API and should be stripped before version control or API import.
+
+**Fix:** Remove the flagged properties from the workflow JSON.
+
+### `large-inline-code` (info)
+
+Detects Code nodes with more than 100 lines of inline JavaScript. Large inline code blocks reduce maintainability.
+
+**Fix:** Extract the code logic into a separate sub-workflow.
+
+### `merge-mode-ambiguity` (info)
+
+Detects Merge nodes without an explicitly configured `mode` parameter. The default behavior may not match the developer's intention.
+
+**Fix:** Set the `mode` parameter explicitly (e.g., `append`, `combine`, `chooseBranch`).
+
+### `prefer-named-node-reference` (warning)
+
+Detects fragile `$json` references in nodes with multiple inputs. When workflows are restructured, `$json` silently references a different predecessor node. Skips Code nodes and nodes with only one input.
+
+**Fix:** Replace `$json` with `$('NodeName').first().json` to make the data source explicit.
+
+### `binary-needs-decode-before-upload` (warning)
+
+Detects upload nodes (Google Drive, S3, FTP) receiving binary data from HTTP Request nodes without a Code node for binary decoding. In n8n's `filesystem-v2` mode, this results in corrupted uploads (Base64-encoded content, 33% larger files).
+
+**Fix:** Add a Code node between the HTTP Request and upload node to call `getBinaryDataBuffer()` and `prepareBinaryData()`.
+
 ## Configuration
 
 Create a `.n8nlintrc.yml` in your project root:
@@ -94,6 +142,14 @@ rules:
   no-unreachable-nodes: warning
   splitInBatches-missing-loop-back: error
   http-no-error-handling: info
+  code-node-no-require: error
+  code-node-no-env: error
+  code-node-no-credential-helpers: error
+  api-clean-json: warning
+  large-inline-code: info
+  merge-mode-ambiguity: info
+  prefer-named-node-reference: warning
+  binary-needs-decode-before-upload: warning
 ```
 
 Valid values: `error`, `warning`, `info`, `off`
@@ -131,9 +187,9 @@ for (const v of violations) {
 
 ## Roadmap
 
-- **v0.3** — Auto-layout and formatting (Prettier for n8n)
-- **v0.4** — Expression analysis rules (invalid references, type mismatches)
-- **v0.5** — n8n API integration (lint workflows directly from n8n instances)
+- **v0.4** — Auto-layout and formatting (Prettier for n8n)
+- **v0.5** — Expression analysis rules (invalid references, type mismatches)
+- **v0.6** — n8n API integration (lint workflows directly from n8n instances)
 
 ## Disclaimer
 

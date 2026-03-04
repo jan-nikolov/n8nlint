@@ -10,6 +10,14 @@ import {
   noUnreachableNodes,
   splitInBatchesMissingLoopBack,
   httpNoErrorHandling,
+  codeNodeNoRequire,
+  codeNodeNoEnv,
+  codeNodeNoCredentialHelpers,
+  apiCleanJson,
+  largeInlineCode,
+  mergeModeAmbiguity,
+  preferNamedNodeReference,
+  binaryNeedsDecodeBeforeUpload,
 } from '../rules/index.js';
 
 const ALL_RULES: LintRule[] = [
@@ -19,6 +27,14 @@ const ALL_RULES: LintRule[] = [
   noUnreachableNodes,
   splitInBatchesMissingLoopBack,
   httpNoErrorHandling,
+  codeNodeNoRequire,
+  codeNodeNoEnv,
+  codeNodeNoCredentialHelpers,
+  apiCleanJson,
+  largeInlineCode,
+  mergeModeAmbiguity,
+  preferNamedNodeReference,
+  binaryNeedsDecodeBeforeUpload,
 ];
 
 /**

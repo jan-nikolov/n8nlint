@@ -1,0 +1,10 @@
+{
+  "name": "Code env (bad)",
+  "nodes": [
+    { "id": "1", "name": "Trigger", "type": "n8n-nodes-base.manualTrigger", "typeVersion": 1, "position": [0, 0], "parameters": {} },
+    { "id": "2", "name": "Get API Key", "type": "n8n-nodes-base.code", "typeVersion": 2, "position": [200, 0], "parameters": { "jsCode": "const apiKey = $env.API_KEY;\nreturn [{ json: { apiKey } }];" } }
+  ],
+  "connections": {
+    "Trigger": { "main": [[{ "node": "Get API Key", "type": "main", "index": 0 }]] }
+  }
+}
