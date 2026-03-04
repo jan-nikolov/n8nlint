@@ -52,6 +52,14 @@ workflow.json → parseWorkflow() → graphology MultiDirectedGraph → LintRule
 | `no-unreachable-nodes` | warning | Nodes without incoming connections (except triggers) |
 | `splitInBatches-missing-loop-back` | error | splitInBatches loop without path back to split node |
 | `http-no-error-handling` | info | HTTP Request nodes without onError configuration |
+| `code-node-no-require` | error | require() calls in Code node jsCode |
+| `code-node-no-env` | error | $env access in Code node jsCode |
+| `code-node-no-credential-helpers` | error | Credential/HTTP helper APIs in Code nodes |
+| `api-clean-json` | warning | Top-level API properties in workflow JSON |
+| `large-inline-code` | info | Code nodes with >100 lines of inline code |
+| `merge-mode-ambiguity` | info | Merge nodes without explicit mode |
+| `prefer-named-node-reference` | warning | Fragile $json refs in multi-input nodes |
+| `binary-needs-decode-before-upload` | warning | Upload nodes without binary decoding from HTTP |
 
 ## Adding a New Rule
 
