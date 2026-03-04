@@ -29,7 +29,7 @@ export const apiCleanJson: LintRule = {
   ): RuleViolation[] {
     const violations: RuleViolation[] = [];
     const workflowName = workflow.name ?? 'Workflow';
-    const raw = workflow as Record<string, unknown>;
+    const raw = workflow as unknown as Record<string, unknown>;
 
     for (const { key, severity, message } of API_PROPERTIES) {
       if (raw[key] !== undefined) {
