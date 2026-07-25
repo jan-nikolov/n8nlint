@@ -41,7 +41,8 @@ jobs:
             work=/tmp/business-os-dependencies
             rm -rf "$work"
             mkdir -p "$work"
-            base64 --decode .github/tooling/business-os-lockfile-cache.package.json.gz.b64 \
+            cat .github/tooling/business-os-lockfile-cache/part-*.b64 \
+              | base64 --decode \
               | gzip --decompress > "$work/package.json"
             cd "$work"
             pnpm install --ignore-scripts --force
