@@ -40,19 +40,20 @@ jobs:
 
           node_bin="$(readlink -f "$(command -v node)")"
           node_root="$(dirname "$(dirname "$node_bin")")"
-          pnpm_bin="$(readlink -f "$(command -v pnpm)")"
-          pnpm_package_root="$(dirname "$(dirname "$pnpm_bin")")"
+          pnpm_home="${PNPM_HOME:-$(dirname "$(command -v pnpm)")}" 
+          pnpm_install_root="$(dirname "$(dirname "$pnpm_home")")"
 
-          printf 'node=%s\nnode_root=%s\npnpm=%s\npnpm_root=%s\n' \
-            "$node_bin" "$node_root" "$pnpm_bin" "$pnpm_package_root"
+          printf 'node=%s\nnode_root=%s\npnpm_home=%s\npnpm_install_root=%s\n' \
+            "$node_bin" "$node_root" "$pnpm_home" "$pnpm_install_root"
 
           cp -a "$node_root" "$root/node"
-          cp -a "$pnpm_package_root" "$root/pnpm-package"
+          cp -a "$pnpm_install_root" "$root/pnpm-install"
           cat > "$root/pnpm" <<'SH'
           #!/usr/bin/env bash
           set -euo pipefail
           toolchain="$(cd "$(dirname "$0")" && pwd)"
-          exec "$toolchain/node/bin/node" "$toolchain/pnpm-package/bin/pnpm.cjs" "$@"
+          export PATH="$toolchain/node/bin:$PATH"
+          exec "$toolchain/pnpm-install/node_modules/.bin/pnpm" "$@"
           SH
           chmod +x "$root/pnpm"
 
