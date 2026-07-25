@@ -35,7 +35,12 @@ jobs:
           cp -a --parents /usr/lib/postgresql/16 "$root"
           cp -a --parents /usr/share/postgresql/16 "$root"
           while IFS= read -r dependency; do
-            test -e "$dependency" && cp -a --parents "$dependency" "$root"
+            case "$(basename "$dependency")" in
+              libc.so.*|libm.so.*|libpthread.so.*|librt.so.*|libdl.so.*|libresolv.so.*|libutil.so.*|ld-linux-*.so.*)
+                continue
+                ;;
+            esac
+            test -e "$dependency" && cp -L --parents "$dependency" "$root"
           done < <(
             find /usr/lib/postgresql/16 -type f -perm -u+x -print0 \
               | xargs -0 -r ldd 2>/dev/null \
