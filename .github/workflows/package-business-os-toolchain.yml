@@ -37,20 +37,27 @@ jobs:
           root=/tmp/business-os-toolchain
           rm -rf "$root"
           mkdir -p "$root"
-          node_root="$(dirname "$(dirname "$(readlink -f "$(command -v node)")")")"
-          pnpm_target="$(readlink -f "$(command -v pnpm)")"
+
+          node_bin="$(readlink -f "$(command -v node)")"
+          node_root="$(dirname "$(dirname "$node_bin")")"
+          pnpm_bin="$(readlink -f "$(command -v pnpm)")"
+          pnpm_package_root="$(dirname "$(dirname "$pnpm_bin")")"
+
+          printf 'node=%s\nnode_root=%s\npnpm=%s\npnpm_root=%s\n' \
+            "$node_bin" "$node_root" "$pnpm_bin" "$pnpm_package_root"
+
           cp -a "$node_root" "$root/node"
-          mkdir -p "$root/pnpm"
-          cp -a "$pnpm_target" "$root/pnpm/pnpm.cjs"
-          cat > "$root/pnpm/pnpm" <<'SH'
+          cp -a "$pnpm_package_root" "$root/pnpm-package"
+          cat > "$root/pnpm" <<'SH'
           #!/usr/bin/env bash
           set -euo pipefail
-          toolchain="$(cd "$(dirname "$0")/.." && pwd)"
-          exec "$toolchain/node/bin/node" "$toolchain/pnpm/pnpm.cjs" "$@"
+          toolchain="$(cd "$(dirname "$0")" && pwd)"
+          exec "$toolchain/node/bin/node" "$toolchain/pnpm-package/bin/pnpm.cjs" "$@"
           SH
-          chmod +x "$root/pnpm/pnpm"
+          chmod +x "$root/pnpm"
+
           "$root/node/bin/node" --version
-          "$root/pnpm/pnpm" --version
+          "$root/pnpm" --version
           tar -C /tmp -czf /tmp/business-os-toolchain.tgz business-os-toolchain
           sha256sum /tmp/business-os-toolchain.tgz
           du -h /tmp/business-os-toolchain.tgz
