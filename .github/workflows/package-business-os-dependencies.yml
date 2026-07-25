@@ -48,6 +48,7 @@ jobs:
               @base-ui/react@1.6.0 \
               @better-auth/api-key@1.6.23 \
               @better-auth/drizzle-adapter@1.6.23 \
+              @eslint-community/eslint-utils@4.9.1 \
               @fontsource-variable/geist@5.3.0 \
               @playwright/test@1.61.1 \
               @tailwindcss/postcss@4.3.3 \
