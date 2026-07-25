@@ -1,0 +1,54 @@
+name: Package Business OS Playwright browser
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    if: github.event.pull_request.head.ref == 'tooling/business-os-runtime'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out helper branch
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Install Node.js
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 24.13.0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6.0.9
+        with:
+          version: 11.15.1
+
+      - name: Install pinned Playwright Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          work=/tmp/business-os-playwright
+          rm -rf "$work" "$HOME/.cache/ms-playwright"
+          mkdir -p "$work"
+          cd "$work"
+          printf '{"name":"business-os-playwright-runtime","private":true,"packageManager":"pnpm@11.15.1","dependencies":{"@playwright/test":"1.61.1"}}\n' > package.json
+          pnpm install --ignore-scripts
+          pnpm exec playwright install chromium
+          find "$HOME/.cache/ms-playwright" -maxdepth 3 -type f -name chrome -o -name headless_shell
+          tar -C "$HOME/.cache" -czf /tmp/business-os-playwright-chromium.tgz ms-playwright
+          sha256sum /tmp/business-os-playwright-chromium.tgz
+          du -h /tmp/business-os-playwright-chromium.tgz
+
+      - name: Upload Playwright Chromium
+        uses: actions/upload-artifact@v4
+        with:
+          name: business-os-playwright-1.61.1-chromium-linux-x64
+          path: /tmp/business-os-playwright-chromium.tgz
+          retention-days: 1
