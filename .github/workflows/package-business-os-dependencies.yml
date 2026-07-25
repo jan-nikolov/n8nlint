@@ -72,6 +72,7 @@ jobs:
               flatted@3.4.2 \
               lucide-react@1.25.0 \
               next@16.2.10 \
+              own-keys@1.0.1 \
               pg@8.22.0 \
               pg-boss@12.24.1 \
               postcss@8.5.20 \
@@ -102,7 +103,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: business-os-pnpm-store-diagnostics
-          path: /tmp/business-os-dependencies.log
+          path: |
+            /tmp/business-os-dependencies.log
+            /tmp/business-os-dependencies/pnpm-lock.yaml
           retention-days: 1
 
       - name: Upload dependency store
