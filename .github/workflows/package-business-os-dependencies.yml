@@ -49,8 +49,10 @@ jobs:
             store="$(pnpm store path)"
             printf 'store=%s\n' "$store"
             tar -C "$(dirname "$store")" -czf /tmp/business-os-pnpm-store.tgz "$(basename "$store")"
-            sha256sum /tmp/business-os-pnpm-store.tgz
-            du -h /tmp/business-os-pnpm-store.tgz
+            sha256sum /tmp/business-os-pnpm-store.tgz | tee /tmp/business-os-pnpm-store.sha256
+            split --bytes=240M --numeric-suffixes=0 --suffix-length=2 \
+              /tmp/business-os-pnpm-store.tgz /tmp/business-os-pnpm-store.part-
+            ls -lh /tmp/business-os-pnpm-store.part-*
           } 2>&1 | tee /tmp/business-os-dependencies.log
 
       - name: Upload dependency diagnostics
@@ -61,14 +63,47 @@ jobs:
           path: |
             /tmp/business-os-dependencies.log
             /tmp/business-os-dependencies/pnpm-lock.yaml
+            /tmp/business-os-pnpm-store.sha256
           retention-days: 1
 
-      - name: Upload exact dependency store
+      - name: Upload exact dependency store part 00
         if: steps.populate.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
-          name: business-os-lockfile-pnpm-store-linux-x64
-          path: /tmp/business-os-pnpm-store.tgz
+          name: business-os-lockfile-pnpm-store-part-00
+          path: /tmp/business-os-pnpm-store.part-00
+          retention-days: 1
+
+      - name: Upload exact dependency store part 01
+        if: steps.populate.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: business-os-lockfile-pnpm-store-part-01
+          path: /tmp/business-os-pnpm-store.part-01
+          retention-days: 1
+
+      - name: Upload exact dependency store part 02
+        if: steps.populate.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: business-os-lockfile-pnpm-store-part-02
+          path: /tmp/business-os-pnpm-store.part-02
+          retention-days: 1
+
+      - name: Upload exact dependency store part 03
+        if: steps.populate.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: business-os-lockfile-pnpm-store-part-03
+          path: /tmp/business-os-pnpm-store.part-03
+          retention-days: 1
+
+      - name: Upload exact dependency store part 04
+        if: steps.populate.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: business-os-lockfile-pnpm-store-part-04
+          path: /tmp/business-os-pnpm-store.part-04
           retention-days: 1
 
       - name: Fail when dependency packaging failed
