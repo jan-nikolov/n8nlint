@@ -43,7 +43,7 @@ jobs:
             mkdir -p "$work"
             cd "$work"
             printf '{"name":"business-os-public-dependency-cache","private":true,"packageManager":"pnpm@11.15.1"}\n' > package.json
-            pnpm add --save-exact \
+            pnpm add --ignore-scripts --save-exact \
               @axe-core/playwright@4.12.1 \
               @base-ui/react@1.6.0 \
               @better-auth/api-key@1.6.23 \
