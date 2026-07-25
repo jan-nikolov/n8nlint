@@ -1,0 +1,66 @@
+name: Package Business OS PostgreSQL runtime
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    if: github.event.pull_request.head.ref == 'tooling/business-os-runtime'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out helper branch
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Install PostgreSQL 16
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-16
+
+      - name: Package portable PostgreSQL runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=/tmp/business-os-postgres
+          rm -rf "$root"
+          mkdir -p "$root"
+          cp -a --parents /usr/lib/postgresql/16 "$root"
+          cp -a --parents /usr/share/postgresql/16 "$root"
+          while IFS= read -r dependency; do
+            test -e "$dependency" && cp -a --parents "$dependency" "$root"
+          done < <(
+            find /usr/lib/postgresql/16 -type f -perm -u+x -print0 \
+              | xargs -0 -r ldd 2>/dev/null \
+              | awk '/=> \/|^\// { for (i=1; i<=NF; i++) if ($i ~ /^\//) print $i }' \
+              | sort -u
+          )
+          cat > "$root/pg" <<'SH'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          root="$(cd "$(dirname "$0")" && pwd)"
+          command_name="${1:?PostgreSQL command required}"
+          shift
+          export LD_LIBRARY_PATH="$root/lib/x86_64-linux-gnu:$root/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}"
+          exec "$root/usr/lib/postgresql/16/bin/$command_name" "$@"
+          SH
+          chmod +x "$root/pg"
+          "$root/pg" postgres --version
+          "$root/pg" initdb --version
+          tar -C /tmp -czf /tmp/business-os-postgres.tgz business-os-postgres
+          sha256sum /tmp/business-os-postgres.tgz
+          du -h /tmp/business-os-postgres.tgz
+
+      - name: Upload PostgreSQL runtime
+        uses: actions/upload-artifact@v4
+        with:
+          name: business-os-postgresql16-linux-x64
+          path: /tmp/business-os-postgres.tgz
+          retention-days: 1
