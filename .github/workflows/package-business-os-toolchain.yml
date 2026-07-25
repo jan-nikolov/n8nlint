@@ -1,21 +1,24 @@
 name: Package Business OS toolchain
 
 on:
-  push:
+  pull_request:
     branches:
-      - tooling/business-os-runtime
+      - main
 
 permissions:
   contents: read
 
 jobs:
   package:
+    if: github.event.pull_request.head.ref == 'tooling/business-os-runtime'
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
     steps:
       - name: Check out helper branch
         uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Install Node.js
         uses: actions/setup-node@v7.0.0
