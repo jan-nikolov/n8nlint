@@ -1,0 +1,60 @@
+name: Package Business OS toolchain
+
+on:
+  push:
+    branches:
+      - tooling/business-os-runtime
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out helper branch
+        uses: actions/checkout@v7.0.1
+
+      - name: Install Node.js
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 24.13.0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6.0.9
+        with:
+          version: 11.15.1
+
+      - name: Package portable toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=/tmp/business-os-toolchain
+          rm -rf "$root"
+          mkdir -p "$root"
+          node_root="$(dirname "$(dirname "$(readlink -f "$(command -v node)")")")"
+          pnpm_target="$(readlink -f "$(command -v pnpm)")"
+          cp -a "$node_root" "$root/node"
+          mkdir -p "$root/pnpm"
+          cp -a "$pnpm_target" "$root/pnpm/pnpm.cjs"
+          cat > "$root/pnpm/pnpm" <<'SH'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          toolchain="$(cd "$(dirname "$0")/.." && pwd)"
+          exec "$toolchain/node/bin/node" "$toolchain/pnpm/pnpm.cjs" "$@"
+          SH
+          chmod +x "$root/pnpm/pnpm"
+          "$root/node/bin/node" --version
+          "$root/pnpm/pnpm" --version
+          tar -C /tmp -czf /tmp/business-os-toolchain.tgz business-os-toolchain
+          sha256sum /tmp/business-os-toolchain.tgz
+          du -h /tmp/business-os-toolchain.tgz
+
+      - name: Upload toolchain
+        uses: actions/upload-artifact@v4
+        with:
+          name: business-os-node24-pnpm11
+          path: /tmp/business-os-toolchain.tgz
+          retention-days: 1
